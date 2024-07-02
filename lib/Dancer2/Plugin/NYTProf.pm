@@ -7,8 +7,6 @@ use warnings;
 # ABSTRACT:  NYTProf, in your Dancer2 application!
 
 use Dancer2::Plugin;
-
-# use Dancer2 qw(:syntax);
 use Dancer2::FileUtils;
 use File::stat;
 use File::Which;
@@ -63,28 +61,15 @@ sub BUILD {
           or die "Could not create html dir - $!";
    }
 
-   # Copied whole from Dancer::Plugin::NYTProf, because it works!
-   #
-   # Need to load Devel::NYTProf at runtime after setting env var, as it will
-   # insist on creating an nytprof.out file immediately - even if we tell it
-   # not to start profiling.  Dirty workaround: get a temp file, then let
-   # Devel::NYTProf use that, with addpid enabled so that it will append the
-   # PID too (so the filename won't exist), load Devel::NYTProf, then unlink
-   # the file.  This is dirty, hacky shit that needs to die, but should make
-   # things work for now.
-   my $tempfh = File::Temp->new;
-   my $file   = $tempfh->filename;
-   $tempfh = undef;                             # let the file get deleted
-   $ENV{NYTPROF} = "start=no:file=$file";
+   local $ENV{NYTPROF} = 'start=no';
    require Devel::NYTProf;
-   unlink $file;
 
    # Set up the hook that will start profiling each route execution.
    $plugin->app->add_hook( Dancer2::Core::Hook->new(
       name => 'before',
       code => sub {
-         my $self = shift;
-         my $path = $self->app->request->path;
+         my $self         = shift;
+         my $path         = $self->app->request->path;
          my $inner_plugin = $self->app->find_plugin('Dancer2::Plugin::NYTProf');
 
          # Do nothing if profiling is disabled, or if we're disabled globally.
@@ -110,16 +95,22 @@ sub BUILD {
          # Start profiling, and let the request continue
          DB::enable_profile(
             Dancer2::FileUtils::path( $inner_profdir, "nytprof.out.$path.$$" ) );
-      } ) );
+      },
+   ) );
+
    $plugin->app->add_hook( Dancer2::Core::Hook->new(
       name => 'after',
       code => sub {
          my $response = shift;
          DB::disable_profile();
          DB::finish_profile();
-      } ) );
+      },
+   ) );
+
    my $old_prefix = $plugin->app->prefix;
+
    $plugin->app->prefix(undef);
+
    $plugin->app->add_route(
       method => 'get',
       regexp => '/nytprof',
@@ -167,9 +158,10 @@ LISTSTART
             my $label        = $file;
             $label =~ s{nytprof\.out\.}{};
             $label =~ s{_s_}{/}g;
+            my ($pid) = $label =~ /\.(\d+)$/;
             $label =~ s{\.(\d+)$}{};
             $label = '/' if $label eq '';
-            my $pid     = $1;                   # refactor this crap
+            # my $pid     = $1;                   # refactor this crap
             my $created = scalar localtime( ( stat $fullfilepath )->ctime );
 
             # read the profile to find out the duration of the profiled request.
@@ -281,12 +273,12 @@ LISTEND
             if ($? == -1) {
                 die "'$nytprofhtml_path' failed to execute: $!";
             } elsif ($? & 127) {
-                die sprintf "'%s' died with signal %d, %s coredump",
+                die sprintf q{'%s' died with signal %d, %s coredump},
                     $nytprofhtml_path,,
                     ($? & 127),
                     ($? & 128) ? 'with' : 'without';
             } elsif ($? != 0) {
-                die sprintf "'%s' exited with value %d",
+                die sprintf q{'%s' exited with value %d},
                     $nytprofhtml_path, $? >> 8;
             }
         }
