@@ -2,8 +2,8 @@ package Dancer2::Plugin::NYTProf;
 use strict;
 use warnings;
 
-# VERSION
-# AUTHORITY
+our $VERSION = '0.0101'; # VERSION
+our $AUTHORITY = 'cpan:GEEKRUTH'; # AUTHORITY
 # ABSTRACT:  NYTProf, in your Dancer2 application!
 
 use Dancer2::Plugin;
@@ -313,6 +313,16 @@ __END__
 
 =pod
 
+=encoding UTF-8
+
+=head1 NAME
+
+Dancer2::Plugin::NYTProf - NYTProf, in your Dancer2 application!
+
+=head1 VERSION
+
+version 0.0101
+
 =head1 SYNOPSIS
 
     package MyApp;
@@ -320,10 +330,10 @@ __END__
  
     # enables profiling and "/nytprof"
     use Dancer2::Plugin::NYTProf;
- 
+
 Or, if you want to enable it only under development environment (as you should!),
 you can do something like:
- 
+
     package MyApp;
     use Dancer2 appname => 'MyApp';
  
@@ -336,24 +346,24 @@ you can do something like:
 
 A plugin to provide easy profiling for Dancer applications, using the venerable
 L<Devel::NYTProf>.
- 
+
 By simply loading this plugin, you'll have the detailed, helpful profiling
 provided by Devel::NYTProf.
- 
+
 Each individual request to your app is profiled.  Going to the URL
 C</nytprof> in your app will present a list of profiles; selecting one will
 invoke C<nytprofhtml> to generate the HTML reports (unless they already exist),
 then serve them up.
 
 =head1 CONFIGURATION
- 
+
 The plugin will work by default without any configuration required - it will
 default to writing profiling data into a dir named C<profdir> within your Dancer
 application's C<appdir>, present profiling output at C</nytprof> (not yet
 configurable), and profile all requests.
- 
+
 Below is an example of the options you can configure:
- 
+
     plugins:
         NYTProf:
             enabled: 1
@@ -361,44 +371,44 @@ Below is an example of the options you can configure:
             profdir: '/tmp/profiledata'
             nytprofhtml_path: '/usr/local/bin/nytprofhtml'
             show_durations: 1
- 
+
 =head2 profdir
- 
+
 Where to store profiling data. Defaults to: C<$appdir/nytprof>
- 
+
 =head2 nytprofhtml_path
- 
+
 Path to the C<nytprofhtml> script that comes with L<Devel::NYTProf>. Defaults to
 the first one we can find in your PATH environment. You should only need to
 change this in very specific environments, where C<nytprofhtml> can't be found by
 this plugin.
- 
+
 =head2 enabled
- 
+
 Whether the plugin as a whole is enabled; disabling this setting will disable
 profiling route executions, and also disable the route which serves up the
 results at C</nytprof>.  Enabled by default, so you only have to provide this
 setting if you wish to set it to a false value.
- 
+
 =head2 profiling_enabled
- 
+
 Whether route executions are profiled or not; if this is set to a false value,
 the before hook which would usually cause L<Devel::NYTProf> to profile that
 route execution will not do so.  This allows you to disable profiling but still
 be able to browse the results of existing profiled executions.  Enabled by
 default, so you only have to provide this setting if you wish to set it to a
 false value.
- 
+
 =head2 show_durations
- 
+
 When listing profile runs, show the duration of each run, extracted from the
 profiling data.  If you have a lot of profiled runs, this might get slow, so
 this option is provided if you don't need the profile durations displayed when
 listing profiles, preferring a faster list.  Defaults to 1.
- 
+
 More configuration (such as the URL at which output is produced, and options to
 control which requests get profiled) will be added in a future version.
- 
+
 =head1 KEYWORDS
 
 This plugin does not add any keywords to L<Dancer2>.
@@ -423,13 +433,26 @@ This plugin relies heavily prior work on L<Dancer::Plugin::NYTProf>.  Special th
 to my employer, Clearbuilt, for giving me time to work on this module.
 
 =head1 SEE ALSO
- 
+
 =over 4
 
 =item * L<Dancer2>
- 
+
 =item * L<Devel::NYTProf>
 
 =back
+
+=cut
+
+=head1 AUTHOR
+
+Ruth Holloway <ruth@hiruthie.me>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2024 by Ruth Holloway.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
 =cut

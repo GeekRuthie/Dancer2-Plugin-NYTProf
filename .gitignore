@@ -1,7 +1,0 @@
-.build
-.gitconfig
-.git
-Dancer2-*
-.vscode
-*.code-workspace
-cpanfile

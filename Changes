@@ -1,16 +1,6 @@
 Revision history for Dancer2-Plugin-NYTProf
 
-{{$NEXT}}
- [API CHANGE]
-
- [BUG FIXES]
-
- [ENHANCEMENTS]
-
- [MAJOR]
-
- [MINOR]
-
+0.0101 2024-07-06T12:18:56-04:00 America/New_York
  [REVISION]
  - Dummy-fy the tests, for now.
 
